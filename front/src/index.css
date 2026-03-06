@@ -1,0 +1,4 @@
+/* Globális stílusok - Bootstrap-et használunk, ezért nincs szükség extra CSS-re */
+body {
+  margin: 0;
+}

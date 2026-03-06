@@ -1,0 +1,34 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model members {
+  id         Int             @id @default(autoincrement()) @db.UnsignedInt
+  name       String          @db.VarChar(255)
+  gender     members_gender?
+  birth_date DateTime        @db.Date
+  banned     Boolean         @default(false)
+  created_at DateTime?       @default(now()) @db.Timestamp(0)
+  updated_at DateTime?       @db.Timestamp(0)
+  payments   payments[]
+}
+
+enum members_gender {
+  M
+  F
+}
+
+model payments {
+  id        Int      @id @default(autoincrement())
+  member_id Int      @db.UnsignedInt
+  amount    Int
+  paid_at   DateTime
+  member    members  @relation(fields: [member_id], references: [id])
+}
