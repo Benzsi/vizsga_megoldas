@@ -18,6 +18,13 @@ interface Member {
   updated_at: string;
 }
 
+function getImage(type: 'M' | 'F' | null) {
+  if(type === "M") return "/male.png"
+  if(type === "F") return "/female.png"
+  
+  return "/other.png"
+}
+
 function BasicExample() {
   const [members, setMembers] = useState<Member[]>([]);
 
@@ -56,6 +63,7 @@ function BasicExample() {
           {members.map((member) => (
             <Col key={member.id} xs={12} md={6} lg={4} className="mb-4">
               <Card>
+                <Card.Img variant="top" src={getImage(member.gender)} />
                 <Card.Body>
                   <Card.Title><h2>{member.name}</h2></Card.Title>
                   <Card.Subtitle className="mb-2 text-muted">
