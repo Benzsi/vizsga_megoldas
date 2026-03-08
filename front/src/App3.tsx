@@ -7,16 +7,10 @@ import Card from 'react-bootstrap/Card';
 import { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { Member } from './types';
 
-interface Member {
-  id: number;
-  name: string;
-  gender: 'M' | 'F' | null;
-  birth_date: string;
-  banned: boolean;
-  created_at: string;
-  updated_at: string;
-}
+const API_BASE_URL = 'http://localhost:3000/api';
+
 
 function getImage(type: 'M' | 'F' | null) {
   if(type === "M") return "/male.png"
@@ -32,7 +26,7 @@ function BasicExample() {
   const [birthDate, setBirthDate] = useState('');
 
   const loadMembers = () => {
-    fetch('http://localhost:3000/api/members')
+    fetch(`${API_BASE_URL}/members`)
       .then(response => response.json())
       .then(data => setMembers(data))
       .catch(error => console.error('Hiba az adatok lekérésekor:', error));
@@ -46,7 +40,7 @@ function BasicExample() {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:3000/api/members', {
+      const response = await fetch(`${API_BASE_URL}/members`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +65,7 @@ function BasicExample() {
 
   const handlePay = async (memberId: number) => {
     try {
-      await fetch(`http://localhost:3000/api/members/${memberId}/pay`, {
+      await fetch(`${API_BASE_URL}/members/${memberId}/pay`, {
         method: 'POST',
       });
     } catch (error) {
@@ -92,7 +86,7 @@ function BasicExample() {
         <Navbar expand="lg" className="bg-body-tertiary">
           <Container>
             <Navbar.Brand>
-              <h1 style={{ margin: 0, fontSize: '1.5rem' }}>Petrik Könyvklub</h1>
+              <h1>Petrik Könyvklub</h1>
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
