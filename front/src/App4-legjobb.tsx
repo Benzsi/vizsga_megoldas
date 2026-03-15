@@ -17,13 +17,61 @@ function getImage(type: 'M' | 'F' | null) {
 function BasicExample() {
 
   const [members, setMembers] = useState<Member[]>([]);
+  const [name, setName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [gender, setGender] = useState<"M" | "F" | "">("");
+  const [paymentSuccessMessage, setPaymentSuccessMessage] = useState("");
+
+  const loadMembers = () => {
+    fetch(`${API_BASE_URL}/members`)
+     .then(response => response.json())
+     .then(data => setMembers(data))
+     .catch(error => console.error("hiba", error))
+  }
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/members`)
-      .then(response => response.json())
-      .then(data => setMembers(data))
-      .catch(error => console.error('Hiba a lekéréskor', error));
+    loadMembers();
   }, []);
+
+  const handlePayment = async (memberId: number) => {
+    setPaymentSuccessMessage("");
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/members/${memberId}/pay`, {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      setPaymentSuccessMessage("Sikeres befizetés!");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (error) {
+      console.error("Befizetesi hiba", error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    await fetch(`${API_BASE_URL}/members`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        gender: gender || null,
+        birth_date: birthDate,
+      }),
+    });
+
+    setName("");
+    setGender("");
+    setBirthDate("");
+    loadMembers();
+  };
 
   return (
     <>
@@ -46,6 +94,15 @@ function BasicExample() {
 
       <main>
           <Container>
+            {paymentSuccessMessage && (
+              <Row className="mb-3">
+                <Col>
+                  <div className="alert alert-success" role="alert">
+                    {paymentSuccessMessage}
+                  </div>
+                </Col>
+              </Row>
+            )}
             <Row>
               {members.map((member) =>(
               <Col key={member.id} xs={12} md={6} lg={4} className="mb-4">
@@ -58,7 +115,9 @@ function BasicExample() {
                 <br></br>
                 <p>Csatlakozas: {new Date(member.created_at).toLocaleDateString("hu-HU")}</p>
               </Card.Text>
-              <Button variant="primary">Go somewhere</Button>
+              <Button variant="primary" onClick={() => handlePayment(member.id)}>
+                Tagdíj befizetés
+              </Button>
             </Card.Body>
           </Card>
           </Col>
@@ -69,24 +128,36 @@ function BasicExample() {
       <section>
         <Container>
           <h2>Tagfelvétel</h2>
-        <Form>
-      <Form.Group className="mb-3" controlId="formBasicEmail">
+        <Form onSubmit={handleSubmit}>
+      <Form.Group className="mb-3" controlId="formName">
         <Form.Label>Név</Form.Label>
         <Form.Control 
           type="text"
-          placeholder="Enter email" />
-        <Form.Text className="text-muted">
-          We'll never share your email with anyone else.
-        </Form.Text>
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Név" />
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formBasicPassword">
-        <Form.Label>Password</Form.Label>
-        <Form.Control type="password" placeholder="Password" />
+      <Form.Group className="mb-3" controlId="formGender">
+        <Form.Label>Nem</Form.Label>
+        <Form.Select
+          value={gender}
+          onChange={(e) => setGender(e.target.value as "M" | "F" | "")}
+        >
+          <option value="">Nincs megadva</option>
+          <option value="M">Férfi</option>
+          <option value="F">Nő</option>
+        </Form.Select>
       </Form.Group>
-      <Form.Group className="mb-3" controlId="formBasicCheckbox">
-        <Form.Check type="checkbox" label="Check me out" />
+
+      <Form.Group className="mb-3" controlId="formBirthDate">
+        <Form.Label>Születési dátum</Form.Label>
+        <Form.Control
+          type="date"
+          value={birthDate}
+          onChange={(e) => setBirthDate(e.target.value)} />
       </Form.Group>
+
       <Button variant="primary" type="submit">
         Tagfelvétel
       </Button>

@@ -26,15 +26,16 @@ function getImage(type: 'M' | 'F' | null) {
 }
 
 function BasicExample() {
+  
   const [members, setMembers] = useState<Member[]>([]);
 
   useEffect(() => {
-    // Adatok lekérése a backend-ből
     fetch('http://localhost:3000/api/members')
       .then(response => response.json())
       .then(data => setMembers(data))
-      .catch(error => console.error('Hiba az adatok lekérésekor:', error));
-  }, []);
+      .catch(error => console.error("hiba", error))
+
+  })
 
   return (
     <>

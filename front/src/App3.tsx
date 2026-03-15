@@ -24,6 +24,7 @@ function BasicExample() {
   const [name, setName] = useState('');
   const [gender, setGender] = useState<'M' | 'F' | ''>('');
   const [birthDate, setBirthDate] = useState('');
+  const [paymentSuccessMessage, setPaymentSuccessMessage] = useState("");
 
   const loadMembers = () => {
     fetch(`${API_BASE_URL}/members`)
@@ -36,32 +37,25 @@ function BasicExample() {
     loadMembers();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (memberId: number) => {
+    setPaymentSuccessMessage("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/members`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          gender: gender || null,
-          birth_date: birthDate,
-        }),
+      const response = await fetch(`${API_BASE_URL}/members/${memberId}/pay`, {
+        method: "POST",
       });
-
-      if (response.ok) {
-        setName('');
-        setGender('');
-        setBirthDate('');
-        loadMembers();
+      if (!response.ok) {
+        return;
       }
+
+      setPaymentSuccessMessage("sikeres fizets");
+      window.scrollTo({top: 0, behavior: "smooth"});
     } catch (error) {
-      console.error('Hiba történt a tag létrehozása során', error);
+      console.error("Befizetési hiba", error)
     }
   };
+
+  
 
   const handlePay = async (memberId: number) => {
     try {
