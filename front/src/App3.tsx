@@ -38,20 +38,21 @@ function BasicExample() {
   }, []);
 
   const handleSubmit = async (memberId: number) => {
-    setPaymentSuccessMessage("");
+    setPaymentSuccessMessage("")
 
     try {
-      const response = await fetch(`${API_BASE_URL}/members/${memberId}/pay`, {
-        method: "POST",
-      });
-      if (!response.ok) {
+      const response = await fetch(`${API_BASE_URL}/members/${memberId}/pay` ,
+        { method: "POST", }
+      );
+
+      if(!response.ok) {
         return;
       }
 
-      setPaymentSuccessMessage("sikeres fizets");
-      window.scrollTo({top: 0, behavior: "smooth"});
+      setPaymentSuccessMessage("Sikeres fizetés");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
-      console.error("Befizetési hiba", error)
+      console.error("befizetési hiba", error)
     }
   };
 

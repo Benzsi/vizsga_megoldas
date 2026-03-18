@@ -19,36 +19,37 @@ function BasicExample() {
   const [members, setMembers] = useState<Member[]>([]);
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("");
-  const [gender, setGender] = useState<"M" | "F" | "">("");
+  const [gender, setGender] = useState<"" | "M" | "F">('');
   const [paymentSuccessMessage, setPaymentSuccessMessage] = useState("");
 
   const loadMembers = () => {
     fetch(`${API_BASE_URL}/members`)
-     .then(response => response.json())
-     .then(data => setMembers(data))
-     .catch(error => console.error("hiba", error))
+      .then(response => response.json())
+      .then(data => setMembers(data))
+      .catch(error => console.error("hiba", error))
   }
 
   useEffect(() => {
     loadMembers();
-  }, []);
+  }, [])
 
   const handlePayment = async (memberId: number) => {
     setPaymentSuccessMessage("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/members/${memberId}/pay`, {
-        method: "POST",
-      });
+      const response = await fetch(`${API_BASE_URL}/members/${memberId}/pay`, 
+        { method: "POST" }
+      );
 
-      if (!response.ok) {
-        return;
+      if (response.ok) {
+        setPaymentSuccessMessage("sikeres");
+        window.scrollTo({top: 0, behavior: "smooth"});
+      } else {
+        setPaymentSuccessMessage("Hiba a fizetésnél: ");
       }
-
-      setPaymentSuccessMessage("Sikeres befizetés!");
-      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
-      console.error("Befizetesi hiba", error);
+      setPaymentSuccessMessage("Hiba a fizetésnél");
+      console.error("hiba", error);
     }
   };
 
